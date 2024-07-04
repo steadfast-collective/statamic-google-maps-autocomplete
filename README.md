@@ -45,7 +45,8 @@ For the Map ID, refer to (Google's docs)[https://developers.google.com/maps/docu
 
 ## How to Use
 
-Add the "Taxonomy Metadata" field to a blueprint, and specify the taxonomy it relates to.
+Add the "Google Maps Autocomplete" field to a blueprint.
+You can also select up to 5 countries to limit the autocomplete results to.
 
 ## Usage within a template
 ```
