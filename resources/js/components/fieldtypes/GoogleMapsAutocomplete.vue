@@ -1,11 +1,21 @@
 <template>
     <div>
-        <text-input
-            :type="inputType"
-            ref="input"
-            :value="displayAddress"
-            @input="updateDebounced"
-        />
+        <div class="relative">
+            <text-input
+                :type="inputType"
+                ref="input"
+                :value="displayAddress"
+                @input="updateDebounced"
+            />
+            <button
+                v-if="value"
+                class="absolute top-0 right-0 h-full flex items-center justify-center px-2"
+                title="Clear"
+                @click="clear"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
         <small class="text-red-500" v-if="!meta.hasKey">
             Google Maps API key not found
         </small>
@@ -179,6 +189,19 @@ export default {
             this.$emit("input", address);
         },
 
+        clear() {
+            this.value = null
+            this.displayAddress = null
+            this.addressObject = {}
+            this.mapMarker.setMap(null)
+            this.mapMarker = null
+            this.map.setCenter({
+                lat: 51.60137899297304,
+                lng: -0.6384859223572998,
+            })
+            this.map.setZoom(6)
+            this.$emit("input", null);
+        }
     },
 
 };
