@@ -324,6 +324,13 @@ class GoogleMapsAutocomplete extends Fieldtype
                 'default' => false,
                 'width' => 50
             ],
+            'min_height' => [
+                'display' => 'Map Height',
+                'instructions' => 'Set the minimum height of the map. (in pixels)',
+                'type' => 'integer',
+                'default' => 350,
+                'width' => 50
+            ],
         ];
     }
 }

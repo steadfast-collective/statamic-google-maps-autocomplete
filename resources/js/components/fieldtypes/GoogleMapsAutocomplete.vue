@@ -27,7 +27,8 @@
 
         <div
             ref="map"
-            class="map"
+            class="bg-gray-400 rounded"
+            :style="`min-height: ${config.min_height}px;`"
         ></div>
 
         <text-input
