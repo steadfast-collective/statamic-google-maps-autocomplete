@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="relative">
+        <div class="relative mb-2">
             <text-input
                 :type="inputType"
                 ref="input"
@@ -29,6 +29,21 @@
             ref="map"
             class="map"
         ></div>
+
+        <text-input
+            v-if="addressObject && config.allow_manual_coordinates"
+            :type="inputType"
+            ref="coordinates"
+            :value="coordinateString"
+            @input="manualCoordinatesEntered"
+            class="mt-2"
+        />
+
+        <span
+            v-if="!config.allow_manual_coordinates"
+            class="text-xs text-gray-800"
+            v-text="coordinateString"
+        ></span>
     </div>
 </template>
 
@@ -108,12 +123,44 @@ export default {
             }
 
             this.autocomplete.addListener("place_changed", this.onPlaceChanged);
+
+            if(this.config.allow_manual_coordinates) {
+                // Add click listener to map
+                this.map.addListener('click', (event) => {
+                    const lat = Number(event.latLng.lat().toFixed(6));
+                    const lng = Number(event.latLng.lng().toFixed(6));
+
+                    // Update addressObject
+                    this.addressObject = {
+                        ...this.addressObject,
+                        coordinates: { lat, lng }
+                    };
+
+                    // Update or create marker
+                    if (this.mapMarker) {
+                        this.mapMarker.position = { lat, lng };
+                    } else {
+                        this.mapMarker = new google.maps.marker.AdvancedMarkerElement({
+                            map: this.map,
+                            content: this.parser.parseFromString(
+                                '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+                                'image/svg+xml'
+                            ).documentElement,
+                            position: { lat, lng }
+                        });
+                    }
+
+                    // Emit the updated value
+                    this.$emit("input", this.addressObject);
+                });
+            }
         })
     },
     methods: {
         isObjectEmpty(obj) {
             return Object.keys(obj).length === 0
         },
+
         updateDebounced: _.debounce(function (value) {
             this.displayAddress = value;
             this.addressObject = { ...this.addressObject, formatted_address: value };
@@ -159,8 +206,8 @@ export default {
                 postal_code: addressComponents.postal_code || "",
                 formatted_address: place.formatted_address,
                 coordinates: {
-                    lat: place.geometry.location.lat(),
-                    lng: place.geometry.location.lng(),
+                    lat: Number(place.geometry.location.lat().toFixed(6)),
+                    lng: Number(place.geometry.location.lng().toFixed(6)),
                 },
             };
 
@@ -189,6 +236,39 @@ export default {
             this.$emit("input", address);
         },
 
+        manualCoordinatesEntered: function(value) {
+            // Parse the coordinate string (expects format "lat, lng")
+            const coords = value.split(',').map(coord => Number(parseFloat(coord.trim()).toFixed(6)));
+
+            if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+                // Update the addressObject with new coordinates
+                this.addressObject = {
+                    ...this.addressObject,
+                    coordinates: {
+                        lat: coords[0],
+                        lng: coords[1]
+                    }
+                };
+
+                // Update marker position
+                if (this.mapMarker) {
+                    this.mapMarker.position = {
+                        lat: coords[0],
+                        lng: coords[1]
+                    };
+                }
+
+                // Center map on new coordinates
+                this.map.setCenter({
+                    lat: coords[0],
+                    lng: coords[1]
+                });
+
+                // Emit the updated address object
+                this.$emit("input", this.addressObject);
+            }
+        },
+
         clear() {
             this.value = null
             this.displayAddress = null
@@ -203,6 +283,14 @@ export default {
             this.$emit("input", null);
         }
     },
+    computed: {
+        coordinateString: function() {
+            if(this.addressObject.coordinates === undefined) {
+                return ''
+            }
 
+            return `${this.addressObject.coordinates.lat}, ${this.addressObject.coordinates.lng}`
+        }
+    },
 };
 </script>
