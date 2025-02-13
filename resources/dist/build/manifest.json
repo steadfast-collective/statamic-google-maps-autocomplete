@@ -1,11 +1,6 @@
 {
-  "resources/css/addon.css": {
-    "file": "assets/addon-6c7d3cdd.css",
-    "isEntry": true,
-    "src": "resources/css/addon.css"
-  },
   "resources/js/addon.js": {
-    "file": "assets/addon-afaf603f.js",
+    "file": "assets/addon-8835a8f3.js",
     "isEntry": true,
     "src": "resources/js/addon.js"
   }

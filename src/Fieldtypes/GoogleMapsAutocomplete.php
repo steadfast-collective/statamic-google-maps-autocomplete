@@ -317,6 +317,20 @@ class GoogleMapsAutocomplete extends Fieldtype
                 'searchable' => true,
                 'width' => 100
             ],
+            'allow_manual_coordinates' => [
+                'display' => 'Allow Manual Coordinates Entry',
+                'instructions' => 'Allow the user to enter coordinates manually via text input or by clicking the map.',
+                'type' => 'toggle',
+                'default' => false,
+                'width' => 50
+            ],
+            'min_height' => [
+                'display' => 'Map Height',
+                'instructions' => 'Set the minimum height of the map. (in pixels)',
+                'type' => 'integer',
+                'default' => 350,
+                'width' => 50
+            ],
         ];
     }
 }
