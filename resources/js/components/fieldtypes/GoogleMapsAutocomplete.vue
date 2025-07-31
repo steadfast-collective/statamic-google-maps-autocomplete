@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="relative mb-2">
+        <div class="gma-relative gma-mb-2">
             <text-input
                 :type="inputType"
                 ref="input"
@@ -9,14 +9,14 @@
             />
             <button
                 v-if="value"
-                class="absolute top-0 right-0 h-full flex items-center justify-center px-2"
+                class="gma-absolute gma-top-0 gma-right-0 gma-h-full gma-flex gma-items-center gma-justify-center gma-px-2"
                 title="Clear"
                 @click="clear"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
         </div>
-        <small class="text-red-500" v-if="!meta.hasKey">
+        <small class="gma-text-red-500" v-if="!meta.hasKey">
             Google Maps API key not found
         </small>
         <input
@@ -27,7 +27,7 @@
 
         <div
             ref="map"
-            class="bg-gray-400 rounded"
+            class="gma-bg-gray-400 rounded"
             :style="`min-height: ${config.min_height}px;`"
         ></div>
 
@@ -37,12 +37,12 @@
             ref="coordinates"
             :value="coordinateString"
             @input="manualCoordinatesEntered"
-            class="mt-2"
+            class="gma-mt-2"
         />
 
         <span
             v-if="!config.allow_manual_coordinates"
-            class="text-xs text-gray-800"
+            class="gma-text-xs gma-text-gray-800"
             v-text="coordinateString"
         ></span>
     </div>
@@ -106,14 +106,15 @@ export default {
                 streetViewControl: false,
                 clickableIcons: false,
                 fullscreenControl: false,
-                center: defaultCoords
+                center: defaultCoords,
+                draggable : this.config.allow_manual_coordinates
             })
 
             if(!this.isObjectEmpty(this.addressObject)) {
                 this.mapMarker = new google.maps.marker.AdvancedMarkerElement({
                     map: this.map,
                     content: this.parser.parseFromString(
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+                        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="gma-size-8 gma-text-red-500"><path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" /></svg>',
                         'image/svg+xml'
                     ).documentElement,
                     position: {
