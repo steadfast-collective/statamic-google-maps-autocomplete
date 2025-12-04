@@ -331,6 +331,32 @@ class GoogleMapsAutocomplete extends Fieldtype
                 'default' => 350,
                 'width' => 50
             ],
+            'center' => [
+                'display' => "Map Center",
+                'instructions' => 'Default center for the map.',
+                'type' => 'group',
+                'width' => 100,
+                'fields' => [
+                    [
+                        'handle' => 'lat',
+                        'field' => [
+                            'display' => "Latitude",
+                            'type' => 'text',
+                            'width' => 50,
+                            'default' => '51.60137899297304'
+                        ]
+                    ],
+                    [
+                        'handle' => 'lng',
+                        'field' => [
+                            'display' => "Longitude",
+                            'type' => 'text',
+                            'width' => 50,
+                            'default' => '-0.6384859223572998'
+                        ]
+                    ],
+                ]
+            ]
         ];
     }
 }
