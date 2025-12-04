@@ -21,12 +21,11 @@ class ServiceProvider extends AddonServiceProvider
 
     public function bootAddon()
     {
-        Statamic::inlineScript(__("window.google_maps_api = ':key'", [
-            'key' => config('statamic-google-maps-autocomplete.google_maps_api_key')
-        ]));
-
-        Statamic::inlineScript(__("window.google_maps_id = ':id'", [
-            'id' => config('statamic-google-maps-autocomplete.google_maps_id')
-        ]));
+        Statamic::provideToScript([
+            'googleMapsAutocomplete' => [
+                'key' => config('statamic-google-maps-autocomplete.google_maps_api_key'),
+                'id' => config('statamic-google-maps-autocomplete.google_maps_id')
+            ]
+        ]);
     }
 }
