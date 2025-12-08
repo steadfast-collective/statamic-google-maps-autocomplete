@@ -145,21 +145,6 @@ const selectSuggestion = async (suggestion) => {
 
     // Emit update
     emit('locationSelected', addressObject.value);
-
-    // updateOrCreateMarker({
-    //     lat: address.coordinates.lat,
-    //     lng: address.coordinates.lng,
-    //     map: map
-    // });
-
-    // map.setCenter({
-    //     lat: address.coordinates.lat,
-    //     lng: address.coordinates.lng
-    // });
-
-    // map.setZoom(13);
-
-    // update(addressObject);
 };
 
 const clear = () => {
