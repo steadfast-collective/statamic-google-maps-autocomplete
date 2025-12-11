@@ -1,7 +1,8 @@
 <template>
     <div>
         <LocationAutocomplete
-            :restrictedCountries="config.country_code"
+            :restrictedCountries="config.included_regions"
+            :includedPrimaryTypes="config.included_primary_types"
             :value="addressObject"
             @locationSelected="processSelectedSuggestion($event)"
             @cleared="clear"
@@ -24,27 +25,40 @@
             :style="`min-height: ${config.min_height}px;`"
         ></div>
 
-        <Input
-            v-if="config.allow_manual_coordinates && meta.hasKey"
-            ref="coordinates"
-            :value="coordinateString"
-            @input="manualCoordinatesEntered($event)"
-            class="mt-2"
-            placeholder="Latitude, Longitude"
-        />
+        <div class="flex items-center mt-2 gap-4">
+            <Input
+                v-if="config.allow_manual_coordinates && meta.hasKey"
+                ref="coordinates"
+                :value="coordinateString"
+                @input="manualCoordinatesEntered($event)"
+                placeholder="Latitude, Longitude"
+                class="max-w-3/4"
+            />
 
-        <span
-            v-if="!config.allow_manual_coordinates"
-            class="gma-text-xs gma-text-gray-800"
-            v-text="coordinateString"
-        ></span>
+            <Input
+                v-if="!config.allow_manual_coordinates && meta.hasKey"
+                ref="coordinates"
+                :value="coordinateString"
+                placeholder="Latitude, Longitude"
+                class="max-w-3/4"
+                readonly
+                disabled
+            />
+
+            <Button
+                v-if="!isObjectEmpty(addressObject)"
+                :text="__('Clear')"
+                @click="clear"
+                class="max-w-1/4 grow"
+            />
+        </div>
     </div>
 </template>
 
 <script setup>
 import { importLibrary } from "@googlemaps/js-api-loader";
 import { Fieldtype } from '@statamic/cms';
-import { Input } from '@statamic/cms/ui';
+import { Input, Button } from '@statamic/cms/ui';
 import { onMounted, ref, useTemplateRef, computed } from 'vue';
 import LocationAutocomplete from "../LocationAutocomplete.vue";
 
@@ -60,14 +74,17 @@ const displayAddress = ref(props.value ? props.value.formatted_address : null);
 const addressObject = ref(props.value || {});
 const parser = new DOMParser();
 
-
 const isObjectEmpty = (obj) =>  {
     return Object.keys(obj).length === 0
 };
 
 const coordinateString = computed(() => {
+    if(isObjectEmpty(addressObject.value)) {
+        return null;
+    }
+
     if(!addressObject.value?.coordinates || addressObject.value.coordinates === undefined) {
-        return ''
+        return null;
     }
 
     return `${addressObject.value.coordinates.lat}, ${addressObject.value.coordinates.lng}`
@@ -135,7 +152,7 @@ const initMap = async () => {
 
             await updateOrCreateMarker({lat, lng, map})
 
-            update(addressObject);
+            update(addressObject.value);
         });
     }
 };
@@ -167,8 +184,6 @@ const updateOrCreateMarker = async ({lat, lng, map} = {}) => {
 };
 
 const clear = () => {
-
-
     displayAddress.value = null;
     addressObject.value = {};
     mapMarker.value.setMap(null);
@@ -200,7 +215,7 @@ const processSelectedSuggestion = (location) => {
 
     map.setZoom(13);
 
-    update(addressObject);
+    update(addressObject.value);
 }
 
 const parseCoordinate = (coord) => {
@@ -240,7 +255,7 @@ const manualCoordinatesEntered = (value) => {
         });
 
         // Emit the updated address object
-        update(addressObject)
+        update(addressObject.value)
     }
 }
 </script>
