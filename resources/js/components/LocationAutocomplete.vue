@@ -67,13 +67,13 @@ const fetchSuggestions = async () => {
 
     let params = {};
 
-    if(props.restrictedCountries.length >= 1) {
+    if(props.restrictedCountries?.length >= 1) {
         params = {
             includedRegionCodes: props.restrictedCountries
         };
     }
 
-    if(props.includedPrimaryTypes.length >= 1) {
+    if(props.includedPrimaryTypes?.length >= 1) {
         params = {
             ...params,
             includedPrimaryTypes: props.includedPrimaryTypes
